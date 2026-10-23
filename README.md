@@ -1,397 +1,291 @@
-**Weather \& Demographic Data Pipeline**
+# Weather & Demographic Data Pipeline
 
 An end-to-end data engineering project that combines weather information
-
 with demographic data, transforms the datasets using Python, stores
-
 processed records in Google BigQuery, and presents insights through SQL
-
 analysis and a Looker Studio dashboard.
 
+## Objectives
 
+-   Collect weather data from a weather API.
+-   Integrate demographic data with weather information.
+-   Clean and transform datasets using Python and Pandas.
+-   Store and query processed data in Google BigQuery.
+-   Analyze temperature patterns using SQL.
+-   Visualize insights in Looker Studio.
+-   Keep the workflow organized and reproducible.
 
-&#x20;**Objectives**
+## Tech Stack
 
-\- Collect weather data from a weather API.
+  Technology        Purpose
+  ----------------- --------------------------------------------
+  Python            Data ingestion and workflow orchestration
+  Pandas            Data cleaning, transformation, and merging
+  Requests          Calling the weather API
+  Google BigQuery   Cloud data storage and analytical queries
+  SQL               Data exploration and analysis
+  Looker Studio     Dashboard and visual reporting
+  Streamlit         Optional local dashboard
+  Git and GitHub    Version control and project hosting
+  Pytest            Automated testing
 
-\- Integrate demographic data with weather information.
+## Project Structure
 
-\- Clean and transform datasets using Python and Pandas.
-
-\- Store and query processed data in Google BigQuery.
-
-\- Analyze temperature patterns using SQL.
-
-\- Visualize insights in Looker Studio.
-
-\- Keep the workflow organized and reproducible.
-
-
-
-&#x20;**Tech Stack**
-
-&#x20; Technology        Purpose
-
-&#x20; Python            Data ingestion and workflow orchestration
-
-&#x20; Pandas            Data cleaning, transformation, and merging
-
-&#x20; Requests          Calling the weather API
-
-&#x20; Google BigQuery   Cloud data storage and analytical queries
-
-&#x20; SQL               Data exploration and analysis
-
-&#x20; Looker Studio     Dashboard and visual reporting
-
-&#x20; Streamlit         Optional local dashboard
-
-&#x20; Git and GitHub    Version control and project hosting
-
-&#x20; Pytest            Automated testing
-
-
-
-&#x20;**Project Structure**
-
+``` text
 weather-demographic-pipeline/
-
 ├── app.py                  # Optional Streamlit dashboard
-
 ├── requirements.txt        # Python dependencies
-
 ├── README.md               # Project documentation
-
 ├── .gitignore               # Excluded files and local data
-
 ├── scripts/
-
 │   └── main.py             # Main data-ingestion workflow
-
 ├── src/
-
 │   ├── pipeline.py         # Pipeline execution entry point
-
 │   └── transform.py        # Data cleaning and transformation
-
 ├── sql/                    # SQL queries and analysis
-
 ├── tests/
-
 │   └── .gitkeep            # Placeholder for tests
-
 └── data/                   # Local input and generated data (may be gitignored)
+```
 
-The structure above describes the intended layout. The actual files in
+*The structure above describes the intended layout. The actual files in
+the repository may differ.*
 
-the repository may differ.
+## Data Sources
 
-
-
-&#x20;**Data Sources**
-
-**Weather data:**
+### Weather data
 
 Weather information is collected from a weather API using Python's
+`requests` library. The available fields depend on the API response and
+the implementation in `scripts/main.py`.
 
-requests library. The available fields depend on the API response and
-
-the implementation in scripts/main.py.
-
-**Demographic data:**
+### Demographic data
 
 The demographic dataset comes from the bootcamp's training resources:
 
-Training Bootcamp Assignment
+[Training Bootcamp Assignment
+Resources](https://github.com/yashhh0001/Training_Bootcamp_Assignment_Resources/tree/main)
 
-
-
-&#x20;**Resources**
-
-Data integration
+### Data integration
 
 Weather and demographic records are cleaned and matched using shared
-
 location identifiers, such as city and country where available. The
-
 final coverage depends on the records returned by the API and the
-
 quality of the location matches.
 
+## Data Pipeline
 
-
-&#x20;**Data Pipeline**
-
+``` text
 Weather API ──────────┐
-
-&#x20;                     ├──> Data ingestion
-
+                      ├──> Data ingestion
 Demographic data ─────┘
+                             |
+                             v
+                       Data cleaning
+                             |
+                             v
+                    Data transformation
+                             |
+                             v
+                  Weather + demographic merge
+                             |
+                             v
+                      Processed dataset
+                       /            \
+                      v              v
+               Google BigQuery   Local CSV output
+                      |
+                      v
+                  SQL analysis
+                      |
+                      v
+                Looker Studio
+                   dashboard
+```
 
-&#x20;                            |
+### Pipeline stages
 
-&#x20;                            v
+1.  **Ingestion:** Fetch weather information and load demographic data.
+2.  **Cleaning:** Standardize location identifiers and prepare the input
+    datasets.
+3.  **Transformation:** Convert fields into a consistent structure for
+    analysis.
+4.  **Integration:** Merge weather and demographic records using
+    location-based keys.
+5.  **Export:** Save processed data locally and upload the relevant data
+    to BigQuery.
+6.  **Analysis:** Query the processed information using SQL and a
+    BigQuery view.
+7.  **Visualization:** Connect BigQuery to Looker Studio.
 
-&#x20;                      Data cleaning
-
-&#x20;                            |
-
-&#x20;                            v
-
-&#x20;                   Data transformation
-
-&#x20;                            |
-
-&#x20;                            v
-
-&#x20;                 Weather + demographic merge
-
-&#x20;                            |
-
-&#x20;                            v
-
-&#x20;                     Processed dataset
-
-&#x20;                      /            \\
-
-&#x20;                     v              v
-
-&#x20;              Google BigQuery   Local CSV output
-
-&#x20;                     |
-
-&#x20;                     v
-
-&#x20;                 SQL analysis
-
-&#x20;                     |
-
-&#x20;                     v
-
-&#x20;               Looker Studio
-
-&#x20;                  dashboard
-
-
-
-&#x20;**Pipeline stages**
-
-1\. Ingestion: Fetch weather information and load demographic data.
-
-2\. Cleaning: Standardize location identifiers and prepare the input
-
-&#x20;  datasets.
-
-3\. Transformation: Convert fields into a consistent structure for
-
-&#x20;  analysis.
-
-4\. Integration: Merge weather and demographic records using
-
-&#x20;  location-based keys.
-
-5\. Export: Save processed data locally and upload the relevant data
-
-&#x20;  to BigQuery.
-
-6\. Analysis: Query the processed information using SQL and a
-
-&#x20;  BigQuery view.
-
-7\. Visualization: Connect BigQuery to Looker Studio.
-
-
-
-&#x20;**Data Coverage and Validation**
+## Data Coverage and Validation
 
 Configured BigQuery resources:
 
-\- Project ID: weather-demographic-bootcamp
-
-\- Dataset: global\_weather\_data
-
-\- Table: current\_weather\_status
-
-\- Analytical view: vw\_hottest\_large\_countries
+-   **Project ID:** `weather-demographic-bootcamp`
+-   **Dataset:** `global_weather_data`
+-   **Table:** `current_weather_status`
+-   **Analytical view:** `vw_hottest_large_countries`
 
 Coverage depends on the source datasets, API response, and successful
-
 matching between locations.
 
+Recommended validation checks:
 
+-   Identify missing location, temperature, or demographic values.
+-   Confirm numeric fields have appropriate data types.
+-   Check for duplicate city-country combinations.
+-   Verify that merge keys match the intended locations.
+-   Confirm temperature categories follow the configured thresholds.
+-   Verify the BigQuery upload and row count.
+-   Re-run the pipeline to check reproducibility.
 
-&#x20;**Recommended validation checks:**
+### Temperature categories
 
-\- Identify missing location, temperature, or demographic values.
+  Category   Rule
+  ---------- --------------------
+  Cold       Below 10°C
+  Mild       10°C to below 25°C
+  Hot        25°C and above
 
-\- Confirm numeric fields have appropriate data types.
+*Add measured row counts, geographic coverage, and validation results
+after checking the actual pipeline output.*
 
-\- Check for duplicate city-country combinations.
+## Google BigQuery Queries
 
-\- Verify that merge keys match the intended locations.
+### 1. Count records
 
-\- Confirm temperature categories follow the configured thresholds.
-
-\- Verify the BigQuery upload and row count.
-
-\- Re-run the pipeline to check reproducibility.
-
-
-
-&#x20;**Temperature categories**
-
-&#x20; Category   Rule
-
-&#x20; Cold       Below 10°C
-
-&#x20; Mild       10°C to below 25°C
-
-&#x20; Hot        25°C and above
-
-
-
-Add measured row counts, geographic coverage, and validation results
-
-after checking the actual pipeline output.
-
-
-
-&#x20;**Google BigQuery Queries**
-
-1\. Count records
-
+``` sql
 SELECT
-
-&#x20; COUNT(\*) AS total\_records
-
+  COUNT(*) AS total_records
 FROM
+  `weather-demographic-bootcamp.global_weather_data.current_weather_status`;
+```
 
-&#x20; `weather-demographic-bootcamp.global\_weather\_data.current\_weather\_status`;
+### 2. Inspect the analytical view
 
-2\. Inspect the analytical view
-
-SELECT \*
-
+``` sql
+SELECT *
 FROM
-
-&#x20; `weather-demographic-bootcamp.global\_weather\_data.vw\_hottest\_large\_countries`
-
+  `weather-demographic-bootcamp.global_weather_data.vw_hottest_large_countries`
 LIMIT 100;
+```
 
-3\. Count temperature categories
+### 3. Count temperature categories
 
-Run this query only if Temperature\_Category exists in the selected
-
+Run this query only if `Temperature_Category` exists in the selected
 table:
 
+``` sql
 SELECT
-
-&#x20; Temperature\_Category,
-
-&#x20; COUNT(\*) AS location\_count
-
+  Temperature_Category,
+  COUNT(*) AS location_count
 FROM
-
-&#x20; `weather-demographic-bootcamp.global\_weather\_data.current\_weather\_status`
-
+  `weather-demographic-bootcamp.global_weather_data.current_weather_status`
 GROUP BY
-
-&#x20; Temperature\_Category
-
+  Temperature_Category
 ORDER BY
+  location_count DESC;
+```
 
-&#x20; location\_count DESC;
+*Confirm the actual column names in BigQuery before running queries that
+reference specific fields.*
 
-Confirm the actual column names in BigQuery before running queries that
+## SQL Analysis
 
-reference specific fields.
-
-
-
-&#x20;**SQL Analysis**
-
-The view vw\_hottest\_large\_countries is intended to support analysis of
-
+The view `vw_hottest_large_countries` is intended to support analysis of
 hotter locations among larger countries. Further analysis could compare
-
 temperatures by location, examine category distributions, and identify
-
 missing or inconsistent records.
-
-
 
 Document specific findings only after checking the actual query results.
 
+## Looker Studio Dashboard
 
-
-&#x20;**Looker Studio Dashboard**
-
-[Open the Weather \& Demographic Dashboard](https://datastudio.google.com/u/0/reporting/7a58b0e9-1f3d-4e7c-8e51-1a1f255d97da/page/bXzBG/edit)
-
-
+[**Open the Weather & Demographic
+Dashboard**](https://datastudio.google.com/u/0/reporting/7a58b0e9-1f3d-4e7c-8e51-1a1f255d97da/page/bXzBG/edit)
 
 The dashboard uses BigQuery as a reporting source. Depending on its
-
 configuration and available fields, it can include:
 
-\- A geographic map of available locations.
-
-\- Temperature values represented with a color gradient.
-
-\- A temperature-category filter, if the category field is available.
-
-\- Interactive charts and shareable reporting.
+-   A geographic map of available locations.
+-   Temperature values represented with a color gradient.
+-   A temperature-category filter, if the category field is available.
+-   Interactive charts and shareable reporting.
 
 Dashboard features and access depend on the report configuration and
-
 sharing permissions.
 
-&#x20;
+## Project Features
 
-**Project Features**
+-   Organized Python ingestion and transformation workflow.
+-   Combined weather and demographic data for analysis.
+-   BigQuery storage and SQL-based exploration.
+-   Reusable analytical view.
+-   Looker Studio reporting.
+-   Optional Streamlit dashboard.
+-   Version-controlled source code and documentation.
 
-\- Organized Python ingestion and transformation workflow.
+## Future Improvements
 
-\- Combined weather and demographic data for analysis.
+-   Schedule regular pipeline runs using a cloud scheduler.
+-   Store historical observations for trend analysis.
+-   Add automated data-quality checks and Pytest tests.
+-   Improve logging, error handling, and failure notifications.
+-   Expand location coverage and data sources.
+-   Add more SQL analysis and dashboard filters.
+-   Use GitHub Actions for automated checks and tests.
+-   Record verified row counts and analysis results in this README.
 
-\- BigQuery storage and SQL-based exploration.
+## How to Run the Project
 
-\- Reusable analytical view.
+### 1. Clone the repository
 
-\- Looker Studio reporting.
+``` bash
+git clone https://github.com/KathakaliNath/weather-demographic-pipeline.git
+cd weather-demographic-pipeline
+git checkout feature/data-ingestion
+```
 
-\- Optional Streamlit dashboard.
+### 2. Install dependencies
 
-\- Version-controlled source code and documentation.
+``` bash
+python -m pip install -r requirements.txt
+```
 
+### 3. Run the pipeline
 
+``` bash
+python src/pipeline.py
+```
 
-&#x20;**Future Improvements**
+The pipeline requires the expected input data, valid API configuration,
+and appropriate Google Cloud/BigQuery permissions.
 
-\- Schedule regular pipeline runs using a cloud scheduler.
+### 4. Run the optional Streamlit dashboard
 
-\- Store historical observations for trend analysis.
+``` bash
+streamlit run app.py
+```
 
-\- Add automated data-quality checks and Pytest tests.
+The processed CSV expected by `app.py` must exist locally. Install the
+dependencies first if Streamlit is not installed.
 
-\- Improve logging, error handling, and failure notifications.
+## Notes
 
-\- Expand location coverage and data sources.
+-   **Credentials:** Never commit API secrets, service-account keys, or
+    other sensitive credentials to GitHub.
+-   **Local data:** Files excluded by `.gitignore` may need to be
+    supplied separately.
+-   **Cloud costs:** BigQuery usage may incur charges depending on
+    billing configuration and query volume.
+-   **Reproducibility:** Confirm that the API, input files, BigQuery
+    resources, and permissions are available before running the full
+    workflow.
 
-\- Add more SQL analysis and dashboard filters.
+## Project Links
 
-\- Use GitHub Actions for automated checks and tests.
-
-\- Record verified row counts and analysis results in this README.
-
-
-
-&#x20;**Project Links**
-
-\- Repository:
-
-&#x20; [weather-demographic-pipeline](https://github.com/KathakaliNath/weather-demographic-pipeline/tree/feature/data-ingestion)
-
-\- Dashboard:
-
-&#x20; [Looker Studio Report](https://datastudio.google.com/u/0/reporting/7a58b0e9-1f3d-4e7c-8e51-1a1f255d97da/page/bXzBG/edit)
+-   **Repository:**
+    [weather-demographic-pipeline](https://github.com/KathakaliNath/weather-demographic-pipeline/tree/feature/data-ingestion)
+-   **Dashboard:** [Looker Studio
+    Report](https://datastudio.google.com/u/0/reporting/7a58b0e9-1f3d-4e7c-8e51-1a1f255d97da/page/bXzBG/edit)
